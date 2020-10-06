@@ -15,6 +15,7 @@ class TabBarVC: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+                
         // is first time for launch
         self.delegate = self
         if !UserDefaults.exists(key: "FirstLaunch") {
@@ -44,7 +45,6 @@ class TabBarVC: UITabBarController {
             }
         }
     }
-
 }
 
 extension TabBarVC: UITabBarControllerDelegate {

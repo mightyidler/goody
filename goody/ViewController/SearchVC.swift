@@ -441,7 +441,7 @@ extension SearchVC: UITableViewDataSource {
             button.frame = CGRect.init(x: headerView.frame.width - 84 , y: 0, width: 80, height: 50)
             button.setTitle("모두 제거", for: .normal)
             button.contentHorizontalAlignment = .left
-            button.titleLabel?.font = UIFont(name: "NanumSquareOTFB", size: 17)
+            button.titleLabel?.font = UIFont(name: "NanumSquareOTFB", size: 15)
             button.setTitleColor(UIColor(named: "ThirdLabelColor"), for: .normal)
             button.addTarget(self, action: #selector(removeAllRecentSearch(_:)), for: .touchUpInside)
             

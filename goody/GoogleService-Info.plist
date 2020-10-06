@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>711766296434-dsq5pblvc0k4ivfq2q947bujtg44sh9u.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.711766296434-dsq5pblvc0k4ivfq2q947bujtg44sh9u</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBfV9c08ncDu7aq27itxAo-wkDsCVWSXZQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>711766296434</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>mightyidler.goody</string>
+	<key>PROJECT_ID</key>
+	<string>goody-62bcd</string>
+	<key>STORAGE_BUCKET</key>
+	<string>goody-62bcd.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:711766296434:ios:93f3bc8099f56e95ccbfeb</string>
+	<key>DATABASE_URL</key>
+	<string>https://goody-62bcd.firebaseio.com</string>
+</dict>
+</plist>

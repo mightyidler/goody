@@ -12,6 +12,9 @@ import CoreHaptics
 import SwiftSoup
 import Kingfisher
 import Lottie
+import Firebase
+import KakaoSDKAuth
+import KakaoSDKUser
 
 class ProductDetailVC: UIViewController, WKUIDelegate {
     @IBOutlet weak var webView: WKWebView!
@@ -29,6 +32,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
     
     var product: product!
     var lastBagIndex: Int!
+    var kakaoUserID: Int64!
     var activityViewController : UIActivityViewController!
     //haptic feedback
     let feedBack: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
@@ -38,13 +42,14 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         return self.fetch()
     }()
     
+    var ref: DatabaseReference!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.feedBack.prepare()
         webView.uiDelegate = self
-
-//        tabBarView.layer.borderWidth = 1;
-//        tabBarView.layer.borderColor = UIColor(named: "SeperatorColor")?.cgColor
+        loadKakaoUserData()
+        ref = Database.database().reference()
         webView.navigationDelegate = self
         webView.customUserAgent = "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; ja-jp) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
         
@@ -74,6 +79,20 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
                 spread: 0)
         }
     }
+    
+    func loadKakaoUserData() {
+        UserApi.shared.me() {(user, error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                if let user = user {
+                    self.kakaoUserID = user.id
+                }
+            }
+        }
+    }
+    
     
     func initItemMessageView() {
         itemSaveView.layer.opacity = 0.0
@@ -144,8 +163,6 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
                             self.itemSaveView.layer.opacity = 0.0
                         })
                     })
-
-                    
                     let animationView = AnimationView(name:"Confetti")
                     self.view.insertSubview(animationView, at: 1)
                     animationView.frame = CGRect(x: 0, y: 0, width: self.webView.frame.size.width, height: self.webView.frame.size.height)
@@ -289,6 +306,26 @@ extension ProductDetailVC {
         
         let object = self.list[self.lastBagIndex]
         
+        //remove firebase database
+        if let id = self.kakaoUserID {
+            let item = self.ref.child(String(id)).child("wishlist")
+            item.observeSingleEvent(of: .value) { (snapshot) in
+                if let index = snapshot.value as? NSDictionary {
+                    for (key, value) in index {
+                        let value = value as! NSDictionary
+                        let link = value["link"] as! String
+                        if link == self.product.link {
+                            item.child(key as! String).removeValue()
+                        }
+                    }
+                } else {
+                    print("dont exist")
+                }
+            }
+        }
+        
+        
+        
         context.delete(object)
         do {
             try context.save()
@@ -313,18 +350,36 @@ extension ProductDetailVC {
         object.setValue(product.image, forKey: "image")
         object.setValue(product.lprice, forKey: "price")
         object.setValue(product.mallName, forKey: "mallName")
-        
-        //append object
+    
+
+        //append object core base
         do {
             try context.save()
             self.list.append(object)
             list = { return self.fetch() }()
             self.checkBag(link: self.product.link)
+            
+            //append firebase database
+            if let id = self.kakaoUserID {
+                let item = self.ref.child(String(id)).child("wishlist")
+                            
+                guard let key = item.childByAutoId().key else { return false }
+                let dict: NSDictionary = ["mallName": product.mallName,
+                                          "title": product.title,
+                                          "image" : product.image,
+                                          "link" : product.link,
+                                          "price" : product.lprice]
+                let update = [key: dict]
+                item.updateChildValues(update)
+            }
+            
             return true
         } catch {
             context.rollback()
             return false
         }
+        
+        
     }
 }
 

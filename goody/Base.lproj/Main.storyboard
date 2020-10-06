@@ -202,7 +202,7 @@
                                                 <rect key="frame" x="36" y="0.0" width="276" height="44"/>
                                                 <color key="tintColor" name="ThirdLabelColor"/>
                                                 <color key="textColor" name="FirstLabelColor"/>
-                                                <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="magnifyingglass" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="LQs-Sa-szz">
@@ -1244,8 +1244,8 @@
     <resources>
         <image name="KakaoLarge" width="600" height="90"/>
         <image name="Logo" width="131" height="40"/>
-        <image name="bag" width="23" height="25"/>
         <image name="bag" catalog="system" width="128" height="128"/>
+        <image name="bag" width="23" height="25"/>
         <image name="bag.fill" catalog="system" width="128" height="128"/>
         <image name="bag.fill" width="23" height="25"/>
         <image name="chevron.left" catalog="system" width="96" height="128"/>

@@ -59,7 +59,7 @@ class FriendsVC: UIViewController {
             else {
                 //do something
                 _ = friends
-
+                print(friends)
                 if let friends = friends {
                     if let elements = friends.elements {
                         for index in 0...elements.count - 1 {

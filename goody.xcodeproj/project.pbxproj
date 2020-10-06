@@ -32,6 +32,7 @@
 		424AE7FB25277100005B2E1F /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AE7FA25277100005B2E1F /* FriendCell.swift */; };
 		424AE7FE252790E7005B2E1F /* ItemSaveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 424AE7FD252790E7005B2E1F /* ItemSaveView.xib */; };
 		424AE8012527921B005B2E1F /* ItemSaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AE8002527921B005B2E1F /* ItemSaveView.swift */; };
+		42993BC6252B50FB00B25414 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 42993BC5252B50FB00B25414 /* GoogleService-Info.plist */; };
 		42A6185725274616001910FF /* MoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A6185625274616001910FF /* MoreVC.swift */; };
 		42A6185A25274FB6001910FF /* TabBarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A6185925274FB6001910FF /* TabBarVC.swift */; };
 		42A6185D252752E6001910FF /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A6185C252752E6001910FF /* ProfileCell.swift */; };
@@ -74,6 +75,7 @@
 		424AE7FA25277100005B2E1F /* FriendCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		424AE7FD252790E7005B2E1F /* ItemSaveView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemSaveView.xib; sourceTree = "<group>"; };
 		424AE8002527921B005B2E1F /* ItemSaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemSaveView.swift; sourceTree = "<group>"; };
+		42993BC5252B50FB00B25414 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		42A6185625274616001910FF /* MoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreVC.swift; sourceTree = "<group>"; };
 		42A6185925274FB6001910FF /* TabBarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarVC.swift; sourceTree = "<group>"; };
 		42A6185C252752E6001910FF /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 		42D514E325237F070032A660 /* goody */ = {
 			isa = PBXGroup;
 			children = (
+				42993BC5252B50FB00B25414 /* GoogleService-Info.plist */,
 				4213A4CE2528BB8F006631F9 /* BottomPopupController */,
 				42B659562526F79C004428FD /* Confetti.json */,
 				42BEC007252610FE005B13F1 /* Font */,
@@ -282,6 +285,7 @@
 				424ACC42252613F400BB2AE6 /* NanumSquareOTFL.otf in Resources */,
 				424AE7FE252790E7005B2E1F /* ItemSaveView.xib in Resources */,
 				424ACC41252613F400BB2AE6 /* NanumSquareOTFB.otf in Resources */,
+				42993BC6252B50FB00B25414 /* GoogleService-Info.plist in Resources */,
 				42D514F125237F090032A660 /* Assets.xcassets in Resources */,
 				42D514EC25237F070032A660 /* Main.storyboard in Resources */,
 			);

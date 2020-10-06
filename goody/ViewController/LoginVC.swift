@@ -61,6 +61,7 @@ class LoginVC: UIViewController {
 
                     //do something
                     _ = oauthToken
+                    print(oauthToken)
                     self.gotoTabBarVC(skip: false)
                 }
             }
@@ -71,7 +72,7 @@ class LoginVC: UIViewController {
                     }
                     else {
                         print("loginWithKakaoAccount() success.")
-
+                        print(oauthToken)
                         //do something
                          _ = oauthToken
                         self.gotoTabBarVC(skip: false)

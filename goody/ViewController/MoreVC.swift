@@ -61,6 +61,7 @@ class MoreVC: UIViewController {
             }
             else {
                 print("profile() success.")
+                print(profile)
                 self.isLogined = true
                 self.tableActions.append(self.accountActionState[1])
                 self.me = Person(favortite: false, id: nil, nickname: profile?.nickname, imageUrl: profile?.thumbnailUrl, uuid: nil)
