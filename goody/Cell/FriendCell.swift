@@ -21,7 +21,8 @@ class FriendCell: UICollectionViewCell {
         profileMaskView.layer.cornerRadius = profileMaskView.frame.height / 2
         
         profileMaskView.layer.borderWidth = 2
-        profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+        //profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+        profileMaskView.layer.borderColor = UIColor.systemIndigo.cgColor
         
         
     }
@@ -30,7 +31,8 @@ class FriendCell: UICollectionViewCell {
         super.traitCollectionDidChange(previousTraitCollection)
         
         if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+            //profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+            profileMaskView.layer.borderColor = UIColor.systemIndigo.cgColor
         }
     }
 }

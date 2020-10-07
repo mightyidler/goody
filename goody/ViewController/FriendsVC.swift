@@ -26,6 +26,8 @@ class FriendsVC: UIViewController {
     @IBOutlet weak var wishlistCollectionView: UICollectionView!
     @IBOutlet weak var emptyLabel: UILabel!
     var screenWidth: CGFloat!
+    //loading states indicator
+    var isLoading: Bool = true
     let selectFeedBack: UISelectionFeedbackGenerator = UISelectionFeedbackGenerator()
     //Header bar seperator
     let border = CALayer()
@@ -57,6 +59,25 @@ class FriendsVC: UIViewController {
         
         loadFrendsList()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.main.async {
+            if self.isLoading {
+                self.wishlistCollectionView.refreshControl?.beginRefreshing()
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        DispatchQueue.main.async {
+            if self.isLoading {
+                self.wishlistCollectionView.refreshControl?.endRefreshing()
+            }
+        }
+    }
+    
+    
     override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -72,6 +93,7 @@ class FriendsVC: UIViewController {
     
     func loadFriendWishList() {
         //remove firebase database
+        self.isLoading = true
         if let friendID = self.friendsArray[self.selectFriendIndex].id {
             let item = self.ref.child(String(friendID)).child("wishList").queryOrderedByKey()
             item.observeSingleEvent(of: .value) { (snapshot) in
@@ -90,12 +112,14 @@ class FriendsVC: UIViewController {
                     }
                     self.wishlistCollectionView.reloadData()
                     self.wishlistCollectionView.refreshControl?.endRefreshing()
+                    self.isLoading = false
                     self.emptyLabel.isHidden = true
                 } else {
                     self.wishlistCollectionView.reloadData()
                     self.wishlistCollectionView.refreshControl?.endRefreshing()
                     self.emptyLabel.text = "위시리스트가 비어있습니다."
                     self.emptyLabel.isHidden = false
+                    self.isLoading = false
                 }
             }
         }
@@ -107,11 +131,15 @@ class FriendsVC: UIViewController {
         TalkApi.shared.friends {(friends, error) in
             if let error = error {
                 print(error)
+                //카카오 로그인 없음
+                DispatchQueue.main.async {
+                    self.emptyLabel.text = "카카오 로그인이 필요합니다."
+                    self.emptyLabel.isHidden = false
+                    self.wishlistCollectionView.refreshControl = nil
+                }
             }
             else {
                 //do something
-                _ = friends
-                print(friends)
                 if let friends = friends {
                     if let elements = friends.elements {
                         if elements.count != 0 {
@@ -119,6 +147,7 @@ class FriendsVC: UIViewController {
                                 let person = elements[index]
                                 let friend = Person(favortite: person.favorite, id: person.id, nickname: person.profileNickname, imageUrl: person.profileThumbnailImage, uuid: person.uuid)
                                 self.friendsArray.append(friend)
+                                
                                 DispatchQueue.main.async {
                                     self.friendsCollectionView.reloadData()
                                     self.loadFriendWishList()
@@ -172,7 +201,6 @@ extension FriendsVC: UICollectionViewDataSource {
                         ]
                     )
                 }
-                
             }
             
             if let title = wishCell.itemTitleLabel {
@@ -218,6 +246,7 @@ extension FriendsVC: UICollectionViewDataSource {
                             .cacheOriginalImage
                         ]
                     )
+                    
                 }
             }
             return frindCell
