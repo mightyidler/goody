@@ -20,7 +20,7 @@ struct product {
     var image: String
 }
 
-class SearchVC: UIViewController, BottomPopupDelegate {
+class SearchVC: UIViewController, BottomPopupDelegate, TabBarReselectHandling {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchTextField: UITextField!
@@ -62,6 +62,9 @@ class SearchVC: UIViewController, BottomPopupDelegate {
     let emptyMessageView = UIView()
     let emptyMessageLabel = UILabel()
 
+    func handleReselect() {
+        self.tableView.setContentOffset(.zero, animated: true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

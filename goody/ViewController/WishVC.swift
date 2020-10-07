@@ -14,7 +14,7 @@ import Firebase
 import KakaoSDKAuth
 import KakaoSDKUser
 
-class WishVC: UIViewController {
+class WishVC: UIViewController, TabBarReselectHandling{
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var gotoSearchPageButton: UIButton!
@@ -37,6 +37,10 @@ class WishVC: UIViewController {
     private lazy var list: [NSManagedObject] = {
         return self.fetch()
     }()
+    
+    func handleReselect() {
+        self.collectionView.setContentOffset(.zero, animated: true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

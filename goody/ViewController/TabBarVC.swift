@@ -10,6 +10,9 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import CoreHaptics
 
+protocol TabBarReselectHandling {
+    func handleReselect()
+}
 class TabBarVC: UITabBarController {
     var impactFeedBack: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator()
     
@@ -61,6 +64,15 @@ extension TabBarVC: UITabBarControllerDelegate {
         print("Selected view controller")
     }
 
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        guard let navigationController = viewController as? UINavigationController else { return true }
+        guard navigationController.viewControllers.count <= 1, let handler = navigationController.viewControllers.first as? TabBarReselectHandling else { return true }
+        if tabBarController.selectedViewController === viewController {
+            handler.handleReselect()
+        }
+        
+        return true
+        }
 //    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
 //        guard
 //            let tabViewControllers = tabBarController.viewControllers,

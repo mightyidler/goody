@@ -44,6 +44,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
     
     var ref: DatabaseReference!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.feedBack.prepare()

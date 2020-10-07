@@ -12,7 +12,7 @@ import KakaoSDKUser
 import Kingfisher
 
 
-class MoreVC: UIViewController {
+class MoreVC: UIViewController, TabBarReselectHandling{
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var header: UIView!
@@ -28,6 +28,10 @@ class MoreVC: UIViewController {
     
     //Header bar seperator
     let border = CALayer()
+    
+    func handleReselect() {
+        self.tableView.setContentOffset(.zero, animated: true)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

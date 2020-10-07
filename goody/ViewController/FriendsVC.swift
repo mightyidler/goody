@@ -20,7 +20,7 @@ struct Person {
     var uuid: String!
 }
 
-class FriendsVC: UIViewController {
+class FriendsVC: UIViewController, TabBarReselectHandling {
 
     @IBOutlet weak var friendsCollectionView: UICollectionView!
     @IBOutlet weak var wishlistCollectionView: UICollectionView!
@@ -35,6 +35,11 @@ class FriendsVC: UIViewController {
     var ref: DatabaseReference!
     var wishList: [product] = []
     var friendsArray: [Person] = []
+    
+    func handleReselect() {
+        self.wishlistCollectionView.setContentOffset(.zero, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ref = Database.database().reference()
