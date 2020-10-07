@@ -15,7 +15,8 @@ class TabBarVC: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        UserDefaults.standard.setValue(false, forKey: "listChanged")
+        UserDefaults.standard.synchronize()
         // is first time for launch
         self.delegate = self
         if !UserDefaults.exists(key: "FirstLaunch") {

@@ -84,9 +84,7 @@ class SearchVC: UIViewController, BottomPopupDelegate {
                 blur: 12,
                 spread: 0)
         }
-        
-        
-        
+
         //search bar seperator
         if let borderColor = UIColor(named: "SeperatorColor") { self.border.backgroundColor = borderColor.cgColor }
         self.border.opacity = 0.0
@@ -116,6 +114,26 @@ class SearchVC: UIViewController, BottomPopupDelegate {
             self.changeShopButton.setImage(logo, for: .normal)
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.changeShopView.layer.opacity = 1.0
+        UIView.animate(withDuration: 1,
+                delay: 0,
+                options: [.autoreverse, .repeat],
+                animations: {
+                    self.changeShopView.layer.opacity = 0.0
+                  },
+                completion: nil)
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.changeShopView.layer.removeAllAnimations()
+        self.view.layer.removeAllAnimations()
+        self.view.layoutIfNeeded()
+    }
+    
+    
     
     override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -512,7 +530,7 @@ extension SearchVC: UITableViewDataSource {
                 }
                 
                 if let cellTitle = resultCell.productTitle {
-                    cellTitle.text = item.title
+                    cellTitle.text = item.title.stringByDecodingHTMLEntities
                 }
                 if let cellMallName = resultCell.mallName {
                     cellMallName.text = item.mallName
@@ -558,6 +576,16 @@ extension SearchVC: UITableViewDataSource {
                 switch response.result {
                 case .success(let value):
                     let json = JSON(value)
+                    print(json)
+                    if !(json["display"].exists()) {
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                            self.apiCalled = false
+                            self.emptyMessageLabel.text = "검색결과가 없습니다."
+                            self.tableView.tableFooterView = self.emptyMessageView
+                        }
+                    }
+                    
                     if let display = json["display"].int {
                         self.start += display
                     }
@@ -604,10 +632,24 @@ extension SearchVC: UITableViewDataSource {
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                         self.apiCalled = false
+//                        if let total = json["total"].int {
+//                            print(total)
+//                            if self.searchResult.count < total {
+//                                self.apiCalled = true
+//                                self.fetchNaverAPI(text: text)
+//                            }
+//                        }
+                        
                     }
                     break
                 case .failure(let error):
                     print(error)
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                        self.apiCalled = false
+                        self.emptyMessageLabel.text = "데이터를 찾을 수 없습니다."
+                        self.tableView.tableFooterView = self.emptyMessageView
+                    }
                     break
                 }
             }
@@ -637,6 +679,11 @@ extension SearchVC {
 
 
 extension SearchVC: SearchSettingPopDelegate {
+    func changeLogo(picker: SearchSettingPopVC, shopOption: Int) {
+        if let logo = UIImage(named: "logo\(shopOption)") {
+            self.changeShopButton.setImage(logo, for: .normal)
+        }
+    }
     func optionPicker(picker: SearchSettingPopVC, shopOption: Int, sortOption: Int) {
         print(shopOption)
         print(sortOption)

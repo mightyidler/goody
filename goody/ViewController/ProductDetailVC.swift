@@ -48,7 +48,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         super.viewDidLoad()
         self.feedBack.prepare()
         webView.uiDelegate = self
-        loadKakaoUserData()
+        //loadKakaoUserData()
         ref = Database.database().reference()
         webView.navigationDelegate = self
         webView.customUserAgent = "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; ja-jp) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
@@ -81,6 +81,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
     }
     
     func loadKakaoUserData() {
+        uploadedList()
         UserApi.shared.me() {(user, error) in
             if let error = error {
                 print(error)
@@ -88,9 +89,16 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
             else {
                 if let user = user {
                     self.kakaoUserID = user.id
+                    self.appendFireBase()
                 }
             }
         }
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+//        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
+//            self.loadKakaoUserData()
+//        }
+        
     }
     
     
@@ -182,10 +190,6 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         self.navigationController?.popViewController(animated: true)
     }
     
-    
-    func setActivityViewController() {
-        
-    }
     @IBAction func shareButtonAction(_ sender: UIBarButtonItem) {
         // Setting description
         let firstActivityItem = self.product.title
@@ -245,26 +249,26 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         }
     }
     
-    func fetchPricesData() {
-        if let product = product {
-            let urlAddress = product.link
-            
-            guard let url = URL(string: "https://search.shopping.naver.com/detail/detail.nhn?cat_id=50002334&nv_mid=21192710714") else {
-                return
-            }
-            do {
-                let html = try String(contentsOf: url, encoding: .utf8)
-                
-                let doc : Document = try SwiftSoup.parse(html)
-                let priceChart: Elements = try doc.select("price_chart")
-                
-                print(try priceChart.html())
-            } catch {
-                
-            }
-            
-        }
-    }
+//    func fetchPricesData() {
+//        if let product = product {
+//            let urlAddress = product.link
+//
+//            guard let url = URL(string: "https://search.shopping.naver.com/detail/detail.nhn?cat_id=50002334&nv_mid=21192710714") else {
+//                return
+//            }
+//            do {
+//                let html = try String(contentsOf: url, encoding: .utf8)
+//
+//                let doc : Document = try SwiftSoup.parse(html)
+//                let priceChart: Elements = try doc.select("price_chart")
+//
+//                print(try priceChart.html())
+//            } catch {
+//
+//            }
+//
+//        }
+//    }
     
 }
 
@@ -306,23 +310,23 @@ extension ProductDetailVC {
         
         let object = self.list[self.lastBagIndex]
         
-        //remove firebase database
-        if let id = self.kakaoUserID {
-            let item = self.ref.child(String(id)).child("wishlist")
-            item.observeSingleEvent(of: .value) { (snapshot) in
-                if let index = snapshot.value as? NSDictionary {
-                    for (key, value) in index {
-                        let value = value as! NSDictionary
-                        let link = value["link"] as! String
-                        if link == self.product.link {
-                            item.child(key as! String).removeValue()
-                        }
-                    }
-                } else {
-                    print("dont exist")
-                }
-            }
-        }
+//        //remove firebase database
+//        if let id = self.kakaoUserID {
+//            let item = self.ref.child(String(id)).child("wishlist")
+//            item.observeSingleEvent(of: .value) { (snapshot) in
+//                if let index = snapshot.value as? NSDictionary {
+//                    for (key, value) in index {
+//                        let value = value as! NSDictionary
+//                        let link = value["link"] as! String
+//                        if link == self.product.link {
+//                            item.child(key as! String).removeValue()
+//                        }
+//                    }
+//                } else {
+//                    print("dont exist")
+//                }
+//            }
+//        }
         
         
         
@@ -331,6 +335,7 @@ extension ProductDetailVC {
             try context.save()
             list = { return self.fetch() }()
             checkBag(link: self.product.link)
+            changedList()
             return true
         } catch {
             context.rollback()
@@ -358,20 +363,20 @@ extension ProductDetailVC {
             self.list.append(object)
             list = { return self.fetch() }()
             self.checkBag(link: self.product.link)
-            
+            changedList()
             //append firebase database
-            if let id = self.kakaoUserID {
-                let item = self.ref.child(String(id)).child("wishlist")
-                            
-                guard let key = item.childByAutoId().key else { return false }
-                let dict: NSDictionary = ["mallName": product.mallName,
-                                          "title": product.title,
-                                          "image" : product.image,
-                                          "link" : product.link,
-                                          "price" : product.lprice]
-                let update = [key: dict]
-                item.updateChildValues(update)
-            }
+//            if let id = self.kakaoUserID {
+//                let item = self.ref.child(String(id)).child("wishlist")
+//
+//                guard let key = item.childByAutoId().key else { return false }
+//                let dict: NSDictionary = ["mallName": product.mallName,
+//                                          "title": product.title,
+//                                          "image" : product.image,
+//                                          "link" : product.link,
+//                                          "price" : product.lprice]
+//                let update = [key: dict]
+//                item.updateChildValues(update)
+//            }
             
             return true
         } catch {
@@ -380,6 +385,29 @@ extension ProductDetailVC {
         }
         
         
+    }
+    
+    func appendFireBase() {
+        if let id = self.kakaoUserID {
+            let item = self.ref.child(String(id)).child("wishList")
+            item.removeValue()
+            if self.list.count != 0 {
+                for index in 0...self.list.count - 1 {
+                    guard let key = item.childByAutoId().key else { return }
+                    let listItem = self.list[index]
+                    let dict: NSDictionary = ["mallName": listItem.value(forKey: "mallName"),
+                                              "title": listItem.value(forKey: "title"),
+                                              "image" : listItem.value(forKey: "image"),
+                                              "link" : listItem.value(forKey: "url"),
+                                              "price" : listItem.value(forKey: "price")]
+                    
+                    //append
+                    let update = [key: dict]
+                    item.updateChildValues(update)
+                }
+            }
+            uploadedList()
+        }
     }
 }
 

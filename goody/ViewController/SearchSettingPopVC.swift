@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import CoreHaptics
 
 protocol SearchSettingPopDelegate: class {
     func optionPicker(picker: SearchSettingPopVC, shopOption: Int, sortOption: Int)
+    func changeLogo(picker: SearchSettingPopVC, shopOption: Int)
 }
 
 class SearchSettingPopVC: BottomPopupViewController {
@@ -59,6 +61,12 @@ class SearchSettingPopVC: BottomPopupViewController {
         self.contentView.layer.mask = maskLayer
         self.sortSegmentedControl.selectedSegmentIndex = self.selectSort
         self.collectionView.reloadData()
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        DispatchQueue.main.async {
+            self.collectionView.scrollToItem(at: (NSIndexPath(item: self.selectShop, section: 0) as IndexPath), at: [], animated: true)
+        }
     }
 
     override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -113,6 +121,7 @@ extension SearchSettingPopVC: UICollectionViewDelegate {
         self.selectFeedBack.selectionChanged()
         self.selectShop = indexPath.row
         self.collectionView.reloadData()
+        delegate?.changeLogo(picker: self, shopOption: indexPath.row)
     }  
 }
 

@@ -80,4 +80,9 @@ class LoginVC: UIViewController {
                 }
         }
     }
+    
+    func loadFromFireBase() {
+        
+    }
+    
 }

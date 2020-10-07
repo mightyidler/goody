@@ -6,14 +6,23 @@
 //
 
 import UIKit
+import CoreData
 import KakaoSDKAuth
 import KakaoSDKUser
+import Firebase
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-        
+    var kakaoUserID: Int64!
+    private lazy var list: [NSManagedObject] = {
+        return self.fetch()
+    }()
+    
+    var ref: DatabaseReference = Database.database().reference()
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        loadKakaoUserData()
         guard let _ = (scene as? UIWindowScene) else { return }
         if let shortcutItem = connectionOptions.shortcutItem {
             guard let tabBarController = window?.rootViewController as? UITabBarController else {
@@ -26,6 +35,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 tabBarController.selectedIndex = 0
             default:
                 tabBarController.selectedIndex = 0
+            }
+        }
+    }
+    
+    func loadKakaoUserData() {
+        UserApi.shared.me() {(user, error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                if let user = user {
+                    self.kakaoUserID = user.id
+                }
             }
         }
     }
@@ -82,8 +104,59 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Save changes in the application's managed object context when the application transitions to the background.
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+        
+        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
+            if let id = self.kakaoUserID {
+                list = { return self.fetch() }()
+                appendFireBase()
+            }
+        } 
     }
     
+    func fetch() -> [NSManagedObject] {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "SavedItem")
+        let result = try! context.fetch(fetchRequest)
+        return result
+    }
     
+    func loadKakaoID() {
+        UserApi.shared.me() {(user, error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                if let user = user {
+                    self.kakaoUserID = user.id
+                }
+            }
+        }
+    }
+    
+    func appendFireBase() {
+        if let id = self.kakaoUserID {
+            let item = self.ref.child(String(id)).child("wishList")
+            item.removeValue()
+            if self.list.count != 0 {
+                print(list)
+                for index in 0...self.list.count - 1 {
+                    guard let key = item.childByAutoId().key else { return }
+                    let listItem = self.list[index]
+                    let dict: NSDictionary = ["mallName": listItem.value(forKey: "mallName"),
+                                              "title": listItem.value(forKey: "title"),
+                                              "image" : listItem.value(forKey: "image"),
+                                              "link" : listItem.value(forKey: "url"),
+                                              "price" : listItem.value(forKey: "price")]
+                    
+                    //append
+                    let update = [key: dict]
+                    item.updateChildValues(update)
+                }
+            }
+            UserDefaults.standard.setValue(false, forKey: "listChanged")
+            UserDefaults.standard.synchronize()
+        }
+    }
 }
 

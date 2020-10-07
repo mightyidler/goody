@@ -32,6 +32,7 @@
 		424AE7FB25277100005B2E1F /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AE7FA25277100005B2E1F /* FriendCell.swift */; };
 		424AE7FE252790E7005B2E1F /* ItemSaveView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 424AE7FD252790E7005B2E1F /* ItemSaveView.xib */; };
 		424AE8012527921B005B2E1F /* ItemSaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AE8002527921B005B2E1F /* ItemSaveView.swift */; };
+		4254C906252DD89F006F2CF3 /* FriendWishCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4254C905252DD89F006F2CF3 /* FriendWishCell.swift */; };
 		42993BC6252B50FB00B25414 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 42993BC5252B50FB00B25414 /* GoogleService-Info.plist */; };
 		42A6185725274616001910FF /* MoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A6185625274616001910FF /* MoreVC.swift */; };
 		42A6185A25274FB6001910FF /* TabBarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A6185925274FB6001910FF /* TabBarVC.swift */; };
@@ -75,6 +76,7 @@
 		424AE7FA25277100005B2E1F /* FriendCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		424AE7FD252790E7005B2E1F /* ItemSaveView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ItemSaveView.xib; sourceTree = "<group>"; };
 		424AE8002527921B005B2E1F /* ItemSaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemSaveView.swift; sourceTree = "<group>"; };
+		4254C905252DD89F006F2CF3 /* FriendWishCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendWishCell.swift; sourceTree = "<group>"; };
 		42993BC5252B50FB00B25414 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		42A6185625274616001910FF /* MoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreVC.swift; sourceTree = "<group>"; };
 		42A6185925274FB6001910FF /* TabBarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarVC.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				424AE7FA25277100005B2E1F /* FriendCell.swift */,
 				4213A4C7252855F8006631F9 /* ActionCell.swift */,
 				4213A4E32528CFE0006631F9 /* ShopLogoCell.swift */,
+				4254C905252DD89F006F2CF3 /* FriendWishCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 				4221ED572524C546004B7590 /* WishVC.swift in Sources */,
 				4213A4E12528BC6E006631F9 /* SearchSettingPopVC.swift in Sources */,
 				4213A4DC2528BB90006631F9 /* BottomPopupPresentAnimator.swift in Sources */,
+				4254C906252DD89F006F2CF3 /* FriendWishCell.swift in Sources */,
 				4213A4DA2528BB90006631F9 /* BottomPopupNavigationController.swift in Sources */,
 				42D514E525237F070032A660 /* AppDelegate.swift in Sources */,
 				42D514E725237F070032A660 /* SceneDelegate.swift in Sources */,
@@ -526,7 +530,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mightyidler.goody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -547,7 +551,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mightyidler.goody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

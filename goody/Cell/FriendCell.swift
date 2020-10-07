@@ -7,29 +7,30 @@
 
 import UIKit
 
-class FriendCell: UITableViewCell {
-    @IBOutlet weak var friendImage: UIImageView!
-    @IBOutlet weak var friendName: UILabel!
+class FriendCell: UICollectionViewCell {
+//    @IBOutlet weak var friendImage: UIImageView!
+//    @IBOutlet weak var friendName: UILabel!
+    @IBOutlet weak var profileImage: UIImageView!
+    @IBOutlet weak var profileLabel: UILabel!
+    @IBOutlet weak var profileMaskView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        friendImage.layer.cornerRadius = 19
-        friendImage.layer.borderWidth = 1
-        friendImage.layer.borderColor = UIColor(named: "SeperatorColor")?.cgColor
-    }
 
-    override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            friendImage.layer.borderColor = UIColor(named: "SeperatorColor")?.cgColor
-        }
+        profileImage.layer.cornerRadius = profileImage.frame.height / 2
+        profileMaskView.layer.cornerRadius = profileMaskView.frame.height / 2
+        
+        profileMaskView.layer.borderWidth = 2
+        profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+        
+        
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            profileMaskView.layer.borderColor = UIColor(named: "ShadowColor2")?.cgColor
+        }
     }
-
 }
