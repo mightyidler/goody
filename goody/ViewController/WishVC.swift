@@ -503,7 +503,7 @@ extension WishVC: UICollectionViewDataSource {
                             .processor(processor),
                             .transition(.fade(0.1)),
                             .scaleFactor(UIScreen.main.scale),
-                            .cacheOriginalImage
+                            .cacheMemoryOnly
                         ]
                     )
                 }

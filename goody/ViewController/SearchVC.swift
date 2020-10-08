@@ -528,6 +528,7 @@ extension SearchVC: UITableViewDataSource {
                             .processor(processor),
                             .scaleFactor(UIScreen.main.scale),
                             .transition(.fade(0.1)),
+                            .cacheMemoryOnly
                         ]
                     )
                 }

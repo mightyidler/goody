@@ -92,6 +92,7 @@
 		42D514F025237F090032A660 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		42D514F325237F090032A660 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		42D514F525237F090032A660 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		42FE3640252F1D9F0098F9C7 /* goody.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = goody.entitlements; sourceTree = "<group>"; };
 		5006ADA8970512C6F10ED6A9 /* Pods-goody.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-goody.debug.xcconfig"; path = "Target Support Files/Pods-goody/Pods-goody.debug.xcconfig"; sourceTree = "<group>"; };
 		F93A41C13AAD8DECC7CEA2CC /* Pods_goody.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_goody.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -185,6 +186,7 @@
 		42D514E325237F070032A660 /* goody */ = {
 			isa = PBXGroup;
 			children = (
+				42FE3640252F1D9F0098F9C7 /* goody.entitlements */,
 				42993BC5252B50FB00B25414 /* GoogleService-Info.plist */,
 				4213A4CE2528BB8F006631F9 /* BottomPopupController */,
 				42B659562526F79C004428FD /* Confetti.json */,
@@ -519,6 +521,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = goody/goody.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 87MK6Z3WD5;
@@ -541,6 +544,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = goody/goody.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 87MK6Z3WD5;

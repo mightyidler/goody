@@ -133,6 +133,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
                         .processor(processor),
                         .scaleFactor(UIScreen.main.scale),
                         .transition(.fade(0.1)),
+                        .cacheMemoryOnly
                     ]
                 )
             }
