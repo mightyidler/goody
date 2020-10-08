@@ -286,7 +286,10 @@ extension WishVC {
     func appendFireBase() {
         if let id = self.kakaoUserID {
             let item = self.ref.child(String(id)).child("wishList")
+            //이거 교체해야함
             item.removeValue()
+            self.ref.child("\(id)").setValue("")
+            //
             if self.list.count != 0 {
                 for index in 0...self.list.count - 1 {
                     guard let key = item.childByAutoId().key else { return }

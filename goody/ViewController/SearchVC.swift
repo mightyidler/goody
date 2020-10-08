@@ -40,7 +40,7 @@ class SearchVC: UIViewController, BottomPopupDelegate, TabBarReselectHandling {
     var apiCalled: Bool = false
     var isSearching: Bool = false
     
-    let shopList: [String] = ["","네이버","쿠팡","G마켓","옥션","11번가","스타일쉐어","29CM","마켓컬리","위메프","이마트몰","티몬","인터파크"]
+    let shopList: [String] = ["","네이버","쿠팡","G마켓","옥션","11번가","무신사","스타일쉐어","29CM","마켓컬리","위메프","이마트몰","티몬","인터파크"]
     //["랭킹순", "최신순", "낮은 가격순", "높은 가격순"]
     let sortList: [String] = ["sim", "date", "asc", "dsc"]
     

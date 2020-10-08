@@ -98,12 +98,12 @@ class FriendsVC: UIViewController, TabBarReselectHandling {
     
     func loadFriendWishList() {
         //remove firebase database
+        self.wishList = []
         self.isLoading = true
         if let friendID = self.friendsArray[self.selectFriendIndex].id {
             let item = self.ref.child(String(friendID)).child("wishList").queryOrderedByKey()
             item.observeSingleEvent(of: .value) { (snapshot) in
                 if let index = snapshot.value as? NSDictionary {
-                    self.wishList = []
                     for (key, value) in index {
                         let value = value as! NSDictionary
                         let link = value["link"] as! String
@@ -145,6 +145,7 @@ class FriendsVC: UIViewController, TabBarReselectHandling {
             }
             else {
                 //do something
+                print(friends)
                 if let friends = friends {
                     if let elements = friends.elements {
                         if elements.count != 0 {

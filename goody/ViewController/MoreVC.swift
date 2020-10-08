@@ -106,6 +106,16 @@ extension MoreVC: UITableViewDelegate {
                 break
             case 1:
                 // index 1 to questions
+                UserApi.shared.unlink {(error) in
+                    if let error = error {
+                        print(error)
+                    }
+                    else {
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
+                        self.present(loginVC, animated: true, completion: nil)
+                    }
+                }
                 break
             case 2:
                 // index 2 to megaphone

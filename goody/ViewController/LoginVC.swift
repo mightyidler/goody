@@ -8,14 +8,18 @@
 import UIKit
 import KakaoSDKAuth
 import KakaoSDKUser
+import Firebase
 
 class LoginVC: UIViewController {
 
     @IBOutlet weak var kakaoLoginButton: UIButton!
     @IBOutlet weak var skipButton: UIButton!
+    
+    var ref: DatabaseReference!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        ref = Database.database().reference()
         // Do any additional setup after loading the view.
     }
     
@@ -35,6 +39,11 @@ class LoginVC: UIViewController {
             return
         }
         
+        //sync kakao id to firebase
+        loadKakaoUserData()
+        
+        
+        //go to tabbar view
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let tabBarVC = storyboard.instantiateViewController(withIdentifier: "TabBarVC")
@@ -47,6 +56,24 @@ class LoginVC: UIViewController {
                 overlayView.removeFromSuperview()
             })
         }
+    }
+    
+    func loadKakaoUserData() {
+        UserApi.shared.me() {(user, error) in
+            if let error = error {
+                print(error)
+            }
+            else {
+                if let user = user {
+                    self.appendFirebaseUser(id: user.id)
+                }
+            }
+        }
+    }
+    
+    func appendFirebaseUser(id: Int64) {
+        //로컬데이터와 파이어베이스 데이터의 동기화 필요
+        //self.ref.child("\(id)").setValue("")
     }
     
     

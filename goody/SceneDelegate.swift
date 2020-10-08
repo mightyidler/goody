@@ -138,6 +138,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let id = self.kakaoUserID {
             let item = self.ref.child(String(id)).child("wishList")
             item.removeValue()
+            self.ref.child("\(id)").setValue("")
             if self.list.count != 0 {
                 print(list)
                 for index in 0...self.list.count - 1 {

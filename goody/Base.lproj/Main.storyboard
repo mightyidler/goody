@@ -497,15 +497,6 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PNr-c5-eOy">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="236"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="쇼핑몰" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9VV-sI-UuZ">
-                                                <rect key="frame" x="20" y="55" width="44.5" height="17"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="17" id="Wge-Ac-0e8"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" name="NanumSquareOTFB" family="NanumSquareOTF" pointSize="17"/>
-                                                <color key="textColor" name="FirstLabelColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="LqW-d3-GVy">
                                                 <rect key="frame" x="20" y="175" width="374" height="32"/>
                                                 <constraints>
@@ -591,6 +582,15 @@
                                                     <action selector="dismissButtonAction:" destination="mLX-ya-gri" eventType="touchUpInside" id="6Ct-Aj-oAf"/>
                                                 </connections>
                                             </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="쇼핑몰" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9VV-sI-UuZ">
+                                                <rect key="frame" x="20" y="55" width="44.5" height="17"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="17" id="WLt-YS-8H5"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="NanumSquareOTFB" family="NanumSquareOTF" pointSize="17"/>
+                                                <color key="textColor" name="FirstLabelColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" name="BackgroundColor"/>
                                         <constraints>
@@ -598,10 +598,10 @@
                                             <constraint firstAttribute="trailing" secondItem="zEf-He-vHA" secondAttribute="trailing" id="6ln-L5-cap"/>
                                             <constraint firstItem="LqW-d3-GVy" firstAttribute="leading" secondItem="PNr-c5-eOy" secondAttribute="leading" constant="20" symbolic="YES" id="6wS-iG-Jgd"/>
                                             <constraint firstItem="Hz6-UR-4Jh" firstAttribute="top" secondItem="PNr-c5-eOy" secondAttribute="top" constant="12" id="AgD-Qp-cNS"/>
-                                            <constraint firstItem="zEf-He-vHA" firstAttribute="top" secondItem="9VV-sI-UuZ" secondAttribute="bottom" constant="10" id="ViS-R6-kDi"/>
+                                            <constraint firstItem="zEf-He-vHA" firstAttribute="top" secondItem="9VV-sI-UuZ" secondAttribute="bottom" constant="10" id="Dg7-2H-hHv"/>
                                             <constraint firstItem="snM-aU-C9O" firstAttribute="leading" secondItem="PNr-c5-eOy" secondAttribute="leading" constant="20" symbolic="YES" id="X0v-SU-gbZ"/>
-                                            <constraint firstItem="9VV-sI-UuZ" firstAttribute="leading" secondItem="PNr-c5-eOy" secondAttribute="leading" constant="20" symbolic="YES" id="dGc-id-966"/>
                                             <constraint firstItem="zEf-He-vHA" firstAttribute="leading" secondItem="PNr-c5-eOy" secondAttribute="leading" id="dYW-lx-Ljp"/>
+                                            <constraint firstItem="9VV-sI-UuZ" firstAttribute="leading" secondItem="PNr-c5-eOy" secondAttribute="leading" constant="20" symbolic="YES" id="g8I-jh-OxA"/>
                                             <constraint firstAttribute="trailing" secondItem="Hz6-UR-4Jh" secondAttribute="trailing" constant="20" symbolic="YES" id="htf-o3-DMs"/>
                                             <constraint firstItem="LqW-d3-GVy" firstAttribute="top" secondItem="snM-aU-C9O" secondAttribute="bottom" constant="10" id="u3I-8v-qj7"/>
                                             <constraint firstItem="snM-aU-C9O" firstAttribute="top" secondItem="zEf-He-vHA" secondAttribute="bottom" constant="20" id="w64-5m-Gkf"/>
@@ -1029,6 +1029,7 @@
                                                 </view>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ba0-Vr-Fb5">
                                                     <rect key="frame" x="4" y="4" width="52" height="52"/>
+                                                    <color key="backgroundColor" name="EmptyColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="52" id="QrM-wY-u9X"/>
                                                         <constraint firstAttribute="height" constant="52" id="dmb-F5-w3G"/>

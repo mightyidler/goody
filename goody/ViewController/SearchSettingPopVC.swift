@@ -27,7 +27,7 @@ class SearchSettingPopVC: BottomPopupViewController {
     var impactFeedBack: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator()
     let selectFeedBack: UISelectionFeedbackGenerator = UISelectionFeedbackGenerator()
     
-    let shopCount: Int = 13
+    let shopCount: Int = 14
     //let shopList: [String] = ["","다나와","쿠팡","스타일쉐어","29cm","g마켓","옥션","11번가","위메프","이마트몰","티몬","인터파크"]
     //["랭킹순", "최신순", "낮은 가격순", "높은 가격순"]
     let sortOption: [String] = ["sim", "date", "asc", "dsc"]
