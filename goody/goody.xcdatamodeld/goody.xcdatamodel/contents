@@ -4,6 +4,9 @@
         <attribute name="text" optional="YES" attributeType="String"/>
     </entity>
     <entity name="SavedItem" representedClassName="SavedItem" syncable="YES" codeGenerationType="class">
+        <attribute name="category1" optional="YES" attributeType="String"/>
+        <attribute name="category2" optional="YES" attributeType="String"/>
+        <attribute name="category3" optional="YES" attributeType="String"/>
         <attribute name="image" optional="YES" attributeType="String"/>
         <attribute name="mallName" optional="YES" attributeType="String"/>
         <attribute name="price" optional="YES" attributeType="String"/>
@@ -12,6 +15,6 @@
     </entity>
     <elements>
         <element name="RecentSearch" positionX="-63" positionY="-18" width="128" height="58"/>
-        <element name="SavedItem" positionX="-54" positionY="0" width="128" height="118"/>
+        <element name="SavedItem" positionX="154.390625" positionY="11.1171875" width="128" height="163"/>
     </elements>
 </model>

@@ -7,12 +7,16 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 import Alamofire
 import Kingfisher
 import CoreHaptics
 import Firebase
 import KakaoSDKAuth
 import KakaoSDKUser
+import FirebaseAuth
+import FirebaseCore
+import FirebaseFirestore
 
 class WishVC: UIViewController, TabBarReselectHandling{
     @IBOutlet weak var collectionView: UICollectionView!
@@ -20,15 +24,19 @@ class WishVC: UIViewController, TabBarReselectHandling{
     @IBOutlet weak var gotoSearchPageButton: UIButton!
     @IBOutlet weak var emptyView: UIView!
     @IBOutlet weak var header: UIView!
+    @IBOutlet weak var headerLabel: UILabel!
     
     let notifiFeedBack: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
     var impactFeedBack: UIImpactFeedbackGenerator = UIImpactFeedbackGenerator()
     var screenWidth: CGFloat!
     var isCellEditing: Bool = false
-    //var kakaoUserID: Int64!
+
     private var nowVC: UIViewController!
+    
+    var uid: NSString!
+    var db: Firestore!
     var ref: DatabaseReference!
-    //var productList: [product] = []
+
     //Header bar seperator
     let border = CALayer()
     var kakaoUserID: Int64!
@@ -44,8 +52,14 @@ class WishVC: UIViewController, TabBarReselectHandling{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         ref = Database.database().reference()
-        //loadKakaoUserData()
+        
+        checkIfUserIsSignedIn()
+        let settings = FirestoreSettings()
+        Firestore.firestore().settings = settings
+        db = Firestore.firestore()
+        
         self.notifiFeedBack.prepare()
         self.impactFeedBack.prepare()
         self.emptyView.isHidden = true
@@ -75,42 +89,56 @@ class WishVC: UIViewController, TabBarReselectHandling{
             if let borderColor = UIColor(named: "SeperatorColor") { self.border.backgroundColor = borderColor.cgColor }
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {_,_ in})
+        UIApplication.shared.registerForRemoteNotifications()
         self.isCellEditing = false
         self.editButton.isSelected = false
         
         self.list = {return self.fetch() }()
         self.collectionView.reloadData()
-        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
-            loadKakaoUserData()
-        }
+        setTotalAmount(animate: false)
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
-            loadKakaoUserData()
+
+    
+    private func checkIfUserIsSignedIn() {
+        Auth.auth().addStateDidChangeListener { (auth, user) in
+            if user != nil {
+                // user is signed in
+                if let id = user?.uid {
+                    self.uid = id as NSString
+                }
+                // go to feature controller
+            } else {
+                 // user is not signed in
+                 // go to login controller
+            }
         }
     }
     
-    func loadKakaoUserData() {
-        UserApi.shared.me() {(user, error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                if let user = user {
-                    self.kakaoUserID = user.id
-                    self.appendFireBase()
+    
+    func setTotalAmount(animate: Bool) {
+        if animate {
+            self.headerLabel.pushTransition(0.4)
+        }
+        if self.list.count != 0 {
+            var totalAmount: Int = 0
+            for item in list {
+                if ((item.value(forKey: "price") as? String) != nil) {
+                    guard let value = Int(item.value(forKey: "price") as! String) else { return }
+                    totalAmount += value
                 }
             }
+            self.headerLabel.text = "\(totalAmount)".wonRepresentation
+        } else {
+            self.headerLabel.text = "위시리스트"
         }
     }
     
-    
     @objc func pullToRefresh(_ sender: Any) {
-            self.list = {return self.fetch() }()
+        self.list = {return self.fetch() }()
     }
     
     @IBAction func editButtonAction(_ sender: UIButton) {
@@ -124,57 +152,12 @@ class WishVC: UIViewController, TabBarReselectHandling{
             self.editButton.isSelected = true
         }
         self.collectionView.reloadData()
+        setTotalAmount(animate: false)
     }
     
     @IBAction func gotoSearchPageButtonAction(_ sender: UIButton) { 
         self.tabBarController?.selectedIndex = 1
     }
-    
-//    func loadKakaoUserData() {
-//        UserApi.shared.me() {(user, error) in
-//            if let error = error {
-//                self.list = {
-//                    return self.fetch()
-//                }()
-//                self.collectionView.reloadData()
-//                print(error)
-//            }
-//            else {
-//                if let user = user {
-//                    self.kakaoUserID = user.id
-//                    self.loadFireBaseData()
-//                }
-//            }
-//        }
-//    }
-    
-//    func loadFireBaseData() {
-//        //remove firebase database
-//        self.productList = []
-//        if let id = self.kakaoUserID {
-//            let item = self.ref.child(String(self.kakaoUserID)).child("wishlist").queryOrderedByKey()
-//            item.observeSingleEvent(of: .value) { (snapshot) in
-//                if let index = snapshot.value as? NSDictionary {
-//                    for (key, value) in index {
-//                        let value = value as! NSDictionary
-//                        let link = value["link"] as! String
-//                        let image = value["image"] as! String
-//                        let mallName = value["mallName"] as! String
-//                        let price = value["price"] as! String
-//                        let title = value["title"] as! String
-//                        let item = product.init(title: title, link: link, lprice: price, mallName: mallName, image: image)
-//                        self.productList.append(item)
-//                        print(item)
-//                    }
-//                    self.collectionView.reloadData()
-//                } else {
-//                    self.collectionView.reloadData()
-//                    print("dont exist")
-//                }
-//            }
-//        }
-//    }
-    
     
     @objc func handleLongPressGesture(_ gesture: UILongPressGestureRecognizer) {
         guard let collectionView = collectionView else {
@@ -199,6 +182,7 @@ class WishVC: UIViewController, TabBarReselectHandling{
                         self.editButton.isSelected = true
                         self.isCellEditing = true
                         self.collectionView.reloadData()
+                        self.setTotalAmount(animate: false)
                     }
                 }))
                 alert.addAction(UIAlertAction(title: "상품 페이지", style: .default , handler:{ (UIAlertAction)in
@@ -242,7 +226,6 @@ extension WishVC {
         context.delete(object)
         do {
             try context.save()
-            changedList()
             return true
         } catch {
             context.rollback()
@@ -268,10 +251,12 @@ extension WishVC {
                     object.setValue(list[index].value(forKey: "url"), forKey: "url")
                     object.setValue(list[index].value(forKey: "price"), forKey: "price")
                     object.setValue(list[index].value(forKey: "mallName"), forKey: "mallName")
+                    object.setValue(list[index].value(forKey: "category1"), forKey: "category1")
+                    object.setValue(list[index].value(forKey: "category2"), forKey: "category2")
+                    object.setValue(list[index].value(forKey: "category3"), forKey: "category3")
                     try context.save()
                 }
                 try context.save()
-                changedList()
                 return true
             } catch {
                 return false
@@ -282,66 +267,29 @@ extension WishVC {
         }
         
     }
-    
-    func appendFireBase() {
-        if let id = self.kakaoUserID {
-            let item = self.ref.child(String(id)).child("wishList")
-            //이거 교체해야함
-            item.removeValue()
-            self.ref.child("\(id)").setValue("")
-            //
-            if self.list.count != 0 {
-                for index in 0...self.list.count - 1 {
-                    guard let key = item.childByAutoId().key else { return }
-                    let listItem = self.list[index]
-                    let dict: NSDictionary = ["mallName": listItem.value(forKey: "mallName"),
-                                              "title": listItem.value(forKey: "title"),
-                                              "image" : listItem.value(forKey: "image"),
-                                              "link" : listItem.value(forKey: "url"),
-                                              "price" : listItem.value(forKey: "price")]
-                    
-                    //append
-                    let update = [key: dict]
-                    item.updateChildValues(update)
-                }
-            }
-            uploadedList()
-        }
-    }
-    
-    //remove selected recent search item
+        
+    //remove selected item
     @objc func removeProduct(_ sender: UIButton) {
+        self.notifiFeedBack.notificationOccurred(.success)
         let tag = self.list.count - sender.tag - 1
-        //if self.kakaoUserID != nil {
-            //remove firebase database
-           // if let id = self.kakaoUserID {
-//                let item = self.ref.child(String(id)).child("wishlist")
-//                item.observeSingleEvent(of: .value) { (snapshot) in
-//                    if let index = snapshot.value as? NSDictionary {
-//                        for (key, value) in index {
-//                            let value = value as! NSDictionary
-//                            let link = value["link"] as! String
-//                            if link == self.productList[tag].link {
-//                                item.child(key as! String).removeValue()
-//                            }
-//                            self.loadFireBaseData()
-//                        }
-//                    } else {
-//                        print("dont exist")
-//                    }
-//                }
-//            }
-//        }
-        let record = self.list[tag]
-        if self.delete(object: record) {
-            let indexPath = IndexPath(item: tag, section: 0)
-            self.collectionView.performBatchUpdates({
-                self.collectionView.deleteItems(at:[indexPath])
-            }, completion:nil)
-            
-            self.list.remove(at: tag)
-            list = { return self.fetch() }()
-            self.notifiFeedBack.notificationOccurred(.success)
+        if let url = self.list[tag].value(forKey: "url") as? String {
+            getItemFirebaseId(url: url)
+        }
+        
+        if self.list.count >= tag  && tag >= 0 {
+            let record = self.list[tag]
+            if self.delete(object: record) {
+                let indexPath = IndexPath(item: sender.tag, section: 0)
+                self.collectionView.performBatchUpdates({
+                    self.collectionView.deleteItems(at:[indexPath])
+                    self.list.remove(at: tag)
+                }, completion: {_ in
+                    self.collectionView.reloadData()
+                    self.setTotalAmount(animate: true)
+                })
+            }
+        } else {
+            self.collectionView.reloadData()
         }
     }
     
@@ -355,16 +303,73 @@ extension WishVC {
         let context = appDelegate.persistentContainer.viewContext
         let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedItem")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
-        
+        firebaseRemoveAll()
         do {
             try context.execute(deleteRequest)
             try context.save()
             list = { return self.fetch() }()
             self.collectionView.reloadData()
+            setTotalAmount(animate: true)
             self.notifiFeedBack.notificationOccurred(.success)
-            changedList()
         } catch {
             context.rollback()
+        }
+    }
+    
+    
+    //firebase remove and remove all
+    
+    func getItemFirebaseId(url: String) {
+        if let id = uid {
+            db.collection("users").document("\(id)").collection("wishList").getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        //print("\(document.documentID) => \(document.data())")
+                        let dict = document.data()
+                        if let link = dict["link"] as? String {
+                            if link == url {
+                                print(document.documentID)
+                                self.firebaseRemove(id: id as String, itemId: document.documentID)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func firebaseRemove(id: String, itemId: String) {
+        db.collection("users").document("\(id)").collection("wishList").document("\(itemId)").delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
+    }
+    func firebaseRemoveAll() {
+        if let id = uid {
+            db.collection("users").document("\(id)").collection("wishList").getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        print("\(document.documentID) => \(document.data())")
+                        self.db.collection("users").document("\(id)").collection("wishList").document("\(document.documentID)").delete() { err in
+                            if let err = err {
+                                print("Error removing document: \(err)")
+                            } else {
+                                print("Document successfully removed!")
+                                return
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            
         }
     }
     
@@ -391,38 +396,30 @@ extension WishVC: UICollectionViewDelegate {
     }
     
     func gotoProductDatailVC(indexPath: Int) {
-        guard let productDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "ProductDetailVC") as? ProductDetailVC else {
+        guard let productVC = self.storyboard?.instantiateViewController(withIdentifier: "ProductVC") as? ProductVC else {
             return
         }
-            let selectProduct = self.list[self.list.count - indexPath - 1]
-            let title = selectProduct.value(forKey: "title") as! String
-            let url = selectProduct.value(forKey: "url") as! String
-            let price = selectProduct.value(forKey: "price") as! String
-            let image = selectProduct.value(forKey: "image") as! String
-            let mallName = selectProduct.value(forKey: "mallName") as! String
-            
-            let item = product.init(title: title, link: url, lprice: price, mallName: mallName, image: image)
-            productDetailVC.product = item
-            show(productDetailVC, sender: indexPath)
-//        else {
-//            let selectProduct = self.productList[self.productList.count - indexPath - 1]
-//            let title = selectProduct.title
-//            let url = selectProduct.link
-//            let price = selectProduct.lprice
-//            let image = selectProduct.image
-//            let mallName = selectProduct.mallName
-//
-//            let item = product.init(title: title, link: url, lprice: price, mallName: mallName, image: image)
-//            productDetailVC.product = item
-//            show(productDetailVC, sender: indexPath)
-//        }
+        let selectProduct = self.list[self.list.count - indexPath - 1]
+        let title = selectProduct.value(forKey: "title") as! String
+        let url = selectProduct.value(forKey: "url") as! String
+        let price = selectProduct.value(forKey: "price") as! String
+        let image = selectProduct.value(forKey: "image") as! String
+        let mallName = selectProduct.value(forKey: "mallName") as! String
+        let category1 = selectProduct.value(forKey: "category1") ?? ""
+        let category2 = selectProduct.value(forKey: "category2") ?? ""
+        let category3 = selectProduct.value(forKey: "category3") ?? ""
+        
+        let item = product.init(title: title, link: url, lprice: price, mallName: mallName, image: image, category1: category1 as! String, category2: category2 as! String, category3: category3 as! String)
+        
+        productVC.item = item
+        show(productVC, sender: indexPath)
     }
     
     //cell highlight
     func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             UIView.animate(withDuration: 0.2) {
-                cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             }
         }
     }
@@ -441,28 +438,16 @@ extension WishVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         //didn't login in kakao
         //guard self.kakaoUserID != nil else {
-            if self.list.count == 0 {
-                DispatchQueue.main.async {
-                    self.emptyView.isHidden = false
-                }
-            } else {
-                if !self.emptyView.isHidden {
-                    self.emptyView.isHidden = true
-                }
+        if self.list.count == 0 {
+            DispatchQueue.main.async {
+                self.emptyView.isHidden = false
             }
-            return self.list.count
-        //}
-        
-//        if self.productList.count == 0 {
-//            DispatchQueue.main.async {
-//                self.emptyView.isHidden = false
-//            }
-//        } else {
-//            if !self.emptyView.isHidden {
-//                self.emptyView.isHidden = true
-//            }
-//        }
-//        return self.productList.count
+        } else {
+            if !self.emptyView.isHidden {
+                self.emptyView.isHidden = true
+            }
+        }
+        return self.list.count
     }
     
     
@@ -475,22 +460,12 @@ extension WishVC: UICollectionViewDataSource {
         var itemMallName: String!
         var itemPrice: String!
         
-        //if self.kakaoUserID == nil {
-            let product = self.list[self.list.count - indexPath.row - 1]
-            itemTitle = (product.value(forKey: "title") as? String)?.stringByDecodingHTMLEntities
-            itemImage = product.value(forKey: "image") as? String
-            itemMallName = product.value(forKey: "mallName") as? String
-            itemPrice = product.value(forKey: "price") as? String
-            
-//        }else {
-//            let product = self.productList[self.productList.count - indexPath.row - 1]
-//            itemTitle = product.title
-//            itemImage = product.image
-//            itemMallName = product.mallName
-//            itemPrice = product.lprice
-//        }
+        let product = self.list[self.list.count - indexPath.row - 1]
+        itemTitle = (product.value(forKey: "title") as? String)?.stringByDecodingHTMLEntities
+        itemImage = product.value(forKey: "image") as? String
+        itemMallName = product.value(forKey: "mallName") as? String
+        itemPrice = product.value(forKey: "price") as? String
         
-
         if let imageView = wishCell.productImage {
             if let url = itemImage {
                 if let url = URL(string: url) {
@@ -524,10 +499,10 @@ extension WishVC: UICollectionViewDataSource {
         }
         
         if let deleteButton = wishCell.deleteButton {
+            deleteButton.tag = indexPath.row
             if self.isCellEditing {
                 wishCell.shakeCell()
                 deleteButton.isHidden = false
-                deleteButton.tag = indexPath.row
                 deleteButton.addTarget(self, action: #selector(removeProduct(_:)), for: .touchUpInside)
             } else {
                 deleteButton.isHidden = true
@@ -541,17 +516,6 @@ extension WishVC: UICollectionViewDataSource {
     
 }
 
-//extension WishVC: UITabBarControllerDelegate {
-//
-//        func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-//            let tabBarIndex = tabBarController.selectedIndex
-//            print(tabBarIndex)
-//            if tabBarIndex == 0{
-//                self.collectionView.setContentOffset(CGPoint.zero, animated: true)
-//            }
-//            self.nowVC = viewController
-//        }
-//}
 
 extension WishVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -565,6 +529,8 @@ extension WishVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
     }
+    
+    
 }
 
 extension WishVC {

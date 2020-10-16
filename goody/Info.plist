@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>프로필 이미지 설정을 위해 사진 갤러리에 접근합니다.</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.goody.backgroundFetch</string>
+		<string>com.goody.backgroundFetchClean</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -33,6 +40,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>naversearchthirdlogin</string>
+		<string>naversearchapp</string>
 		<string>kakaokompassauth</string>
 		<string>kakaolink</string>
 	</array>
@@ -103,6 +112,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

@@ -14,6 +14,7 @@ class ProfileCell: UITableViewCell {
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var profileName: UILabel!
     @IBOutlet weak var logOutButton: UIButton!
+    @IBOutlet weak var ImageChangeButton: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

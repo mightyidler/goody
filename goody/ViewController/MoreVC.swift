@@ -6,14 +6,17 @@
 //
 
 import UIKit
+import CoreData
 import KakaoSDKAuth
 import KakaoSDKTalk
 import KakaoSDKUser
 import Kingfisher
+import Firebase
+import FirebaseAuth
+import FirebaseStorage
 
-
-class MoreVC: UIViewController, TabBarReselectHandling{
-
+class MoreVC: UIViewController, TabBarReselectHandling, UIImagePickerControllerDelegate & UINavigationControllerDelegate{
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var header: UIView!
     
@@ -21,11 +24,17 @@ class MoreVC: UIViewController, TabBarReselectHandling{
     var isLogined: Bool!
     var name: String!
     var thumbnailURL: URL!
-    let accountActionState: [String] = ["로그인", "로그아웃"]
-    var tableActions: [String] = ["설정","자주 묻는 질문","공지사항"]
-    let tableActionImages: [String] = ["gearshape", "person.fill.questionmark", "megaphone", "lock"]
-    let feedbackHaptic: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
+    let storage = Storage.storage()
+    var uid: String!
+    var profileImage: URL!
     
+    var db: Firestore!
+    let accountActionState: [String] = ["로그인", "로그아웃"]
+    //    var tableActions: [String] = ["설정","자주 묻는 질문","공지사항"]
+    var tableActions: [String] = []
+    let tableActionImages: [String] = ["lock"]
+    let feedbackHaptic: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
+    var handle: AuthStateDidChangeListenerHandle?
     //Header bar seperator
     let border = CALayer()
     
@@ -35,8 +44,10 @@ class MoreVC: UIViewController, TabBarReselectHandling{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        db = Firestore.firestore()
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        checkFirebaseLogin()
         self.tableView.tableFooterView = UIView()
         self.tableView.separatorColor = UIColor(named: "SeperatorColor")
         
@@ -46,8 +57,14 @@ class MoreVC: UIViewController, TabBarReselectHandling{
         border.frame = CGRect(x: 0, y: self.header.frame.size.height - 1, width: self.header.frame.size.width, height: 1)
         self.header.layer.addSublayer(border)
         
-        loadProfile()
+        self.tableView.refreshControl = UIRefreshControl()
+        self.tableView.refreshControl?.alpha = 0.6
+        self.tableView.refreshControl?.addTarget(self, action: #selector(pullToRefresh(_:)), for: .valueChanged)
+        self.tableView.refreshControl?.beginRefreshing()
+        
+        //loadProfile()
     }
+    
     override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
@@ -55,27 +72,58 @@ class MoreVC: UIViewController, TabBarReselectHandling{
         }
     }
     
-    
-    func loadProfile() {
-        TalkApi.shared.profile {(profile, error) in
-            if let error = error {
-                print(error)
+    @objc func pullToRefresh(_ sender: Any) {
+        self.tableView.reloadData()
+        self.tableView.refreshControl?.endRefreshing()
+    }
+    func checkFirebaseLogin() {
+        handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+            if user != nil {
+                // user is signed in
+                if let id = user?.uid {
+                    self.uid = id
+                    self.loadImageUrl()
+                    let doc = self.db.collection("users").document("\(id)")
+                    doc.getDocument { (document, error) in
+                        if let document = document, document.exists {
+                            let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+                            print("Document data: \(dataDescription)")
+                            if let nickname = document["nickname"] as? String {
+                                self.me = Person(favortite: false, id: nil, nickname: nickname, imageUrl: nil, uuid: nil)
+                                self.isLogined = true
+                                self.tableActions.append(self.accountActionState[1])
+                                DispatchQueue.main.async {
+                                    self.tableView.reloadData()
+                                    self.tableView.refreshControl?.endRefreshing()
+                                }
+                            }
+                            
+                        } else {
+                            let alert = UIAlertController(title: "로그인 정보를 불러오는데 실패했습니다.", message: nil, preferredStyle: UIAlertController.Style.alert)
+                            self.present(alert, animated: true, completion: nil)
+                            let when = DispatchTime.now() + 1
+                            DispatchQueue.main.asyncAfter(deadline: when){
+                                // your code with delay
+                                alert.dismiss(animated: true, completion: nil)
+                                self.firebaseSignOut()
+                            }
+                            
+                        }
+                    }
+                }
+            } else {
+                // user is not signed in
                 self.isLogined = false
                 self.tableActions.append(self.accountActionState[0])
-            }
-            else {
-                print("profile() success.")
-                print(profile)
-                self.isLogined = true
-                self.tableActions.append(self.accountActionState[1])
-                self.me = Person(favortite: false, id: nil, nickname: profile?.nickname, imageUrl: profile?.thumbnailUrl, uuid: nil)
-            }
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
             }
         }
         
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        Auth.auth().removeStateDidChangeListener(handle!)
+    }
+    
 }
 
 extension MoreVC: UITableViewDelegate {
@@ -83,7 +131,7 @@ extension MoreVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) {
             UIView.animate(withDuration: 0.2) {
-                cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             }
         }
     }
@@ -101,42 +149,29 @@ extension MoreVC: UITableViewDelegate {
         if  indexPath.section == 1 {
             print(indexPath.row)
             switch indexPath.row {
-            case 0:
-                // index 0 to setting
-                break
-            case 1:
+//            case 0:
+//                // index 0 to setting
+//                break
+//            case 0:
                 // index 1 to questions
-                UserApi.shared.unlink {(error) in
-                    if let error = error {
-                        print(error)
-                    }
-                    else {
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                        self.present(loginVC, animated: true, completion: nil)
-                    }
-                }
-                break
-            case 2:
-                // index 2 to megaphone
-                break
-            case 3:
+//                setProfileImage()
+//                break
+            case 0:
                 // index 3 to log out
+                
                 if isLogined {
                     let alert = UIAlertController(title: "카카오 계정을 로그아웃 하시겠습니까?", message: nil, preferredStyle: .actionSheet)
-                        alert.addAction(UIAlertAction(title: "로그아웃", style: .destructive , handler:{ (UIAlertAction)in
-                            self.kakaoLogOut()
-                        }))
-
-                        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler:{ (UIAlertAction)in
-                        }))
-
-                        self.present(alert, animated: true, completion: {
-                        })
+                    alert.addAction(UIAlertAction(title: "로그아웃", style: .destructive , handler:{ (UIAlertAction)in
+                        self.firebaseSignOut()
+                    }))
+                    
+                    alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler:{ (UIAlertAction)in
+                    }))
+                    
+                    self.present(alert, animated: true, completion: {
+                    })
                 } else {
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                    self.present(loginVC, animated: true, completion: nil)
+                    gotoLoginVC()
                 }
                 
                 
@@ -147,33 +182,32 @@ extension MoreVC: UITableViewDelegate {
         }
     }
     
-    func kakaoLogOut() {
-        UserApi.shared.logout {(error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                self.feedbackHaptic.prepare()
-                self.feedbackHaptic.notificationOccurred(.success)
-                UserDefaults.standard.removeObject(forKey: "FirstLaunch")
-                UserDefaults.standard.synchronize()
-                self.gotoTabBarVC()
+    
+    func firebaseSignOut() {
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+            self.feedbackHaptic.prepare()
+            self.feedbackHaptic.notificationOccurred(.success)
+            gotoLoginVC()
+            
+        } catch let signOutError as NSError {
+            let alert = UIAlertController(title: "로그아웃 실패", message: signOutError as? String, preferredStyle: UIAlertController.Style.alert)
+            self.present(alert, animated: true, completion: nil)
+            let when = DispatchTime.now() + 3
+            DispatchQueue.main.asyncAfter(deadline: when){
+                // your code with delay
+                alert.dismiss(animated: true, completion: nil)
             }
         }
     }
     
-    func gotoTabBarVC() {
+    func gotoLoginVC() {
+        self.removeAll()
         DispatchQueue.main.async {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let tabBarVC = storyboard.instantiateViewController(withIdentifier: "TabBarVC")
-            let overlayView = UIScreen.main.snapshotView(afterScreenUpdates: false)
-            tabBarVC.view.addSubview(overlayView)
-            self.view.window!.rootViewController = tabBarVC
-            UIView.animate(withDuration: 0.4, delay: 0, options: .transitionCrossDissolve, animations: {
-                overlayView.alpha = 0
-            }, completion: { finished in
-                overlayView.removeFromSuperview()
-            })
+            let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
+            self.present(loginVC, animated:true, completion:nil)
         }
     }
 }
@@ -229,8 +263,13 @@ extension MoreVC: UITableViewDataSource {
                 profileCell.profileName.text = name
             }
             
+            
+            if let button = profileCell.ImageChangeButton {
+                button.addTarget(self, action: #selector(changeProfileImage(_:)), for: .touchUpInside)
+            }
+            
             if let imageView = profileCell.profileImage {
-                if let url = me.imageUrl {
+                if let url = profileImage {
                     let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
                         |> ResizingImageProcessor(referenceSize: CGSize(width: imageView.frame.width, height: imageView.frame.height), mode: .aspectFill)
                     imageView.kf.indicatorType = .activity
@@ -243,13 +282,68 @@ extension MoreVC: UITableViewDataSource {
                             .cacheMemoryOnly
                         ]
                     )
+                    
                 }
             }
         }
+        
         if isLogined == false {
             profileCell.profileName.text = "로그인이 필요합니다."
         }
         return profileCell
+    }
+    
+    func setProfileImage() {
+        let picker = UIImagePickerController()
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    @objc func changeProfileImage(_ sender: UIButton) {
+        setProfileImage()
+    }
+    
+    func loadImageUrl() {
+        if let id = self.uid {
+            let starsRef = storage.reference().child("profileImage/\(id).jpg")
+            starsRef.downloadURL { url, error in
+                if let error = error {
+                    // Handle any errors
+                } else {
+                    // Get the download URL for 'images/stars.jpg'
+                    self.profileImage = url
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let id = self.uid {
+            guard let im: UIImage = info[.editedImage] as? UIImage else { return }
+            guard let d: Data = im.jpegData(compressionQuality: 0.5) else { return }
+            
+            let md = StorageMetadata()
+            md.contentType = "image/png"
+            
+            let ref = Storage.storage().reference().child("profileImage/\(id).jpg")
+            
+            ref.putData(d, metadata: md) { (metadata, error) in
+                if error == nil {
+                    ref.downloadURL(completion: { (url, error) in
+                        print("Done, url is \(String(describing: url))")
+                    })
+                }else{
+                    print("error \(String(describing: error))")
+                }
+            }
+            dismiss(animated: true, completion: {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.seconds(3), execute: {
+                    print("reload")
+                    self.tableView.reloadData()
+                })
+            })
+        }
     }
     
 }
@@ -274,6 +368,21 @@ extension MoreVC {
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut, animations: {
                 self.border.opacity = 1.0
             })
+        }
+    }
+}
+
+extension MoreVC {
+    func removeAll() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedItem")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+        } catch {
+            context.rollback()
         }
     }
 }

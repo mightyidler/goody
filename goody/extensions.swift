@@ -264,17 +264,6 @@ extension String {
 }
 
 
-extension UIViewController {
-    func changedList() {
-        UserDefaults.standard.setValue(true, forKey: "listChanged")
-        UserDefaults.standard.synchronize()
-    }
-    
-    func uploadedList() {
-        UserDefaults.standard.setValue(false, forKey: "listChanged")
-        UserDefaults.standard.synchronize()
-    }
-}
 
 extension UIImage {
     func getPixelColor(pos: CGPoint) -> UIColor {
@@ -292,4 +281,17 @@ extension UIImage {
         return UIColor(red: r, green: g, blue: b, alpha: a)
     }
 
+}
+
+
+// Usage: insert view.pushTransition right before changing content
+extension UIView {
+    func pushTransition(_ duration:CFTimeInterval) {
+        let animation:CATransition = CATransition()
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        animation.type = CATransitionType.push
+        animation.subtype = CATransitionSubtype.fromTop
+        animation.duration = duration
+        layer.add(animation, forKey: CATransitionType.push.rawValue)
+    }
 }

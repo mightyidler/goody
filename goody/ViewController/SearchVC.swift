@@ -18,6 +18,9 @@ struct product {
     var lprice: String
     var mallName: String
     var image: String
+    var category1: String
+    var category2: String
+    var category3: String
 }
 
 class SearchVC: UIViewController, BottomPopupDelegate, TabBarReselectHandling {
@@ -372,7 +375,8 @@ extension SearchVC: UITableViewDelegate {
             return
         }
         productDetailVC.product = self.searchResult[indexPath.row]
-        show(productDetailVC, sender: indexPath)
+        //show(productDetailVC, sender: indexPath)
+        present(productDetailVC, animated: true, completion: nil)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -400,7 +404,7 @@ extension SearchVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) {
             UIView.animate(withDuration: 0.2) {
-                cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             }
         }
     }
@@ -616,13 +620,17 @@ extension SearchVC: UITableViewDataSource {
 
                     if let items = json["items"].array {
                         for item in items {
+                            print(item)
                             if let link = item["link"].string,
                                let lprice = item["lprice"].string,
                                let title = item["title"].string,
                                let mallName = item["mallName"].string,
-                               let image = item["image"].string {
+                               let image = item["image"].string,
+                                let category1 = item["category1"].string,
+                                let category2 = item["category2"].string,
+                                let category3 = item["category3"].string {
                                 let title = self.makeNakeString(string: title)
-                                let result = product.init(title: title, link: link, lprice: lprice, mallName: mallName, image: image)
+                                let result = product.init(title: title, link: link, lprice: lprice, mallName: mallName, image: image, category1: category1, category2: category2, category3: category3 )
                                 
                                 if mallName == self.shopList[self.selectedShop] || self.selectedShop == 0 {
                                     self.searchResult.append(result)

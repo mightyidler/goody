@@ -7,22 +7,31 @@
 
 import UIKit
 import CoreData
-import KakaoSDKAuth
-import KakaoSDKUser
+//import KakaoSDKAuth
+//import KakaoSDKUser
 import Firebase
+import FirebaseAuth
+import FirebaseCore
+import FirebaseFirestore
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    var kakaoUserID: Int64!
-    private lazy var list: [NSManagedObject] = {
-        return self.fetch()
-    }()
     
-    var ref: DatabaseReference = Database.database().reference()
+//    private lazy var list: [NSManagedObject] = {
+//        return self.fetch()
+//    }()
+    
+    var uid: NSString!
+    var db: Firestore!
+    var ref: DocumentReference? = nil
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        loadKakaoUserData()
+        let settings = FirestoreSettings()
+        Firestore.firestore().settings = settings
+        db = Firestore.firestore()
+        checkIfUserIsSignedIn()
+        
         guard let _ = (scene as? UIWindowScene) else { return }
         if let shortcutItem = connectionOptions.shortcutItem {
             guard let tabBarController = window?.rootViewController as? UITabBarController else {
@@ -39,19 +48,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    func loadKakaoUserData() {
-        UserApi.shared.me() {(user, error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                if let user = user {
-                    self.kakaoUserID = user.id
+    private func checkIfUserIsSignedIn() {
+        Auth.auth().addStateDidChangeListener { (auth, user) in
+            if user != nil {
+                // user is signed in
+                if let id = user?.uid {
+                    self.uid = id as NSString
                 }
+                // go to feature controller
+            } else {
+                 // user is not signed in
+                 // go to login controller
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let loginVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
+                self.window?.rootViewController = loginVC
+                self.window?.makeKeyAndVisible()
             }
         }
     }
-    
+
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         guard let tabBarController = window?.rootViewController as? UITabBarController else {
             return
@@ -67,11 +82,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        if let url = URLContexts.first?.url {
-            if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                _ = AuthController.handleOpenUrl(url: url)
-            }
-        }
+//        if let url = URLContexts.first?.url {
+//            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+//                _ = AuthController.handleOpenUrl(url: url)
+//            }
+//        }
     }
     
     
@@ -101,63 +116,78 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
-        
         // Save changes in the application's managed object context when the application transitions to the background.
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
         
-        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
-            if let id = self.kakaoUserID {
-                list = { return self.fetch() }()
-                appendFireBase()
-            }
-        } 
+//        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
+//            if let id = self.uid {
+//                list = { return self.fetch() }()
+//                appendFireBase()
+//            }
+//        }
     }
     
-    func fetch() -> [NSManagedObject] {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "SavedItem")
-        let result = try! context.fetch(fetchRequest)
-        return result
-    }
+//    func fetch() -> [NSManagedObject] {
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        let context = appDelegate.persistentContainer.viewContext
+//        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "SavedItem")
+//        let result = try! context.fetch(fetchRequest)
+//        return result
+//    }
     
-    func loadKakaoID() {
-        UserApi.shared.me() {(user, error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                if let user = user {
-                    self.kakaoUserID = user.id
-                }
-            }
-        }
-    }
-    
-    func appendFireBase() {
-        if let id = self.kakaoUserID {
-            let item = self.ref.child(String(id)).child("wishList")
-            item.removeValue()
-            self.ref.child("\(id)").setValue("")
-            if self.list.count != 0 {
-                print(list)
-                for index in 0...self.list.count - 1 {
-                    guard let key = item.childByAutoId().key else { return }
-                    let listItem = self.list[index]
-                    let dict: NSDictionary = ["mallName": listItem.value(forKey: "mallName"),
-                                              "title": listItem.value(forKey: "title"),
-                                              "image" : listItem.value(forKey: "image"),
-                                              "link" : listItem.value(forKey: "url"),
-                                              "price" : listItem.value(forKey: "price")]
-                    
-                    //append
-                    let update = [key: dict]
-                    item.updateChildValues(update)
-                }
-            }
-            UserDefaults.standard.setValue(false, forKey: "listChanged")
-            UserDefaults.standard.synchronize()
-        }
-    }
+//    func appendFireBase() {
+//        if let id = self.uid {
+//            print("saved")
+//
+//            //item.removeValue()
+//            db.collection("users").document("\(id)").collection("wishList").getDocuments() { (querySnapshot, err) in
+//                if let err = err {
+//                    print("Error getting documents: \(err)")
+//                } else {
+//                    for document in querySnapshot!.documents {
+//                        print("\(document.documentID) => \(document.data())")
+//                        self.db.collection("users").document("\(id)").collection("wishList").document("\(document.documentID)").delete() { err in
+//                            if let err = err {
+//                                print("Error removing document: \(err)")
+//                            } else {
+//                                print("Document successfully removed!")
+//                                return
+//
+//                            }
+//                        }
+//                    }
+//                }
+//
+//
+//                if self.list.count != 0 {
+//                    print(self.list)
+//                    for index in 0...self.list.count - 1 {
+//                        let listItem = self.list[index]
+//                        let dict: [String: Any] = ["mallName": listItem.value(forKey: "mallName"),
+//                                                  "title": listItem.value(forKey: "title"),
+//                                                  "image" : listItem.value(forKey: "image"),
+//                                                  "link" : listItem.value(forKey: "url"),
+//                                                  "price" : listItem.value(forKey: "price")]
+//
+//                        //append
+//                        self.db.collection("users").document("\(id)").collection("wishList").addDocument(data: dict) { err in
+//                            if let err = err {
+//                                print("Error writing document: \(err)")
+//                            } else {
+//                                print("Document successfully written!")
+//                            }
+//                        }
+//                    }
+//                }
+//
+//
+//            }
+//
+//
+//
+//            UserDefaults.standard.setValue(false, forKey: "listChanged")
+//            UserDefaults.standard.synchronize()
+//        }
+//    }
 }
 

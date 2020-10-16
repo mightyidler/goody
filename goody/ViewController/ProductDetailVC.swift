@@ -15,8 +15,10 @@ import Lottie
 import Firebase
 import KakaoSDKAuth
 import KakaoSDKUser
+import FirebaseCore
+import FirebaseFirestore
 
-class ProductDetailVC: UIViewController, WKUIDelegate {
+class ProductDetailVC: UIViewController {
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var dismissButton: UIBarButtonItem!
@@ -32,7 +34,10 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
     
     var product: product!
     var lastBagIndex: Int!
-    var kakaoUserID: Int64!
+    
+    var uid: NSString!
+    var db: Firestore!
+    
     var activityViewController : UIActivityViewController!
     //haptic feedback
     let feedBack: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
@@ -43,23 +48,28 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
     }()
     
     var ref: DatabaseReference!
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.feedBack.prepare()
         webView.uiDelegate = self
-        //loadKakaoUserData()
-        ref = Database.database().reference()
+        checkIfUserIsSignedIn()
+        let settings = FirestoreSettings()
+        Firestore.firestore().settings = settings
+        db = Firestore.firestore()
+        
         webView.navigationDelegate = self
         webView.customUserAgent = "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_3_3 like Mac OS X; ja-jp) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5"
+        webView.configuration.preferences.javaScriptEnabled = true
         
         if let product = product {
             let url = product.link
             print(url)
             let requestUrl = URL(string: url)
             let request = URLRequest(url: requestUrl!)
+            
             webView.load(request)
+            
             self.checkBag(link: url)
             //fetchPricesData()
         }
@@ -72,7 +82,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
 
         if #available(iOS 13, *), self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             itemSaveView.layer.applySketchShadow(
-                color: UIColor(named: "ShadowColor")!,
+                color: UIColor(named: "ShadowColor2")!,
                 alpha: 1.0,
                 x: 0,
                 y: 0,
@@ -81,20 +91,22 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         }
     }
     
-    func loadKakaoUserData() {
-        uploadedList()
-        UserApi.shared.me() {(user, error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                if let user = user {
-                    self.kakaoUserID = user.id
-                    self.appendFireBase()
+    private func checkIfUserIsSignedIn() {
+        Auth.auth().addStateDidChangeListener { (auth, user) in
+            if user != nil {
+                // user is signed in
+                if let id = user?.uid {
+                    self.uid = id as NSString
                 }
+                // go to feature controller
+            } else {
+                 // user is not signed in
+                 // go to login controller
             }
         }
     }
+
+    
     override func viewWillDisappear(_ animated: Bool) {
 //        if UserDefaults.standard.value(forKey: "listChanged") as! Bool == true {
 //            self.loadKakaoUserData()
@@ -107,7 +119,7 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         itemSaveView.layer.opacity = 0.0
         itemMaskView.layer.cornerRadius = 19
         itemSaveView.layer.applySketchShadow(
-            color: UIColor(named: "ShadowColor")!,
+            color: UIColor(named: "ShadowColor2")!,
             alpha: 1.0,
             x: 0,
             y: 0,
@@ -158,11 +170,13 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         if let product = product {
             if self.saveButton.isSelected {
                 if self.removeFromBag() {
+                    getItemFirebaseId()
                     self.saveButton.isSelected = false
                     self.feedBack.notificationOccurred(.success)
                 }
             } else {
                 if appendProduct(product: product) {
+                    firebaseAppend()
                     self.saveButton.isSelected = true
                     self.feedBack.notificationOccurred(.success)
                     
@@ -188,8 +202,63 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
         }
     }
     
+    func firebaseAppend() {
+        let dict: [String: Any] = ["mallName": product.mallName,
+                                   "title": product.title,
+                                   "image" : product.image,
+                                   "link" : product.link,
+                                   "price" : product.lprice,
+                                   "category1": product.category1,
+                                   "category2": product.category2,
+                                   "category3": product.category3]
+        
+        //append
+        if let id = uid {
+            db.collection("users").document("\(id)").collection("wishList").addDocument(data: dict) { err in
+                if let err = err {
+                    print("Error writing document: \(err)")
+                } else {
+                    print("Document successfully written!")
+                }
+            }
+        }
+    }
+    
+    func getItemFirebaseId() {
+        if let id = uid {
+            db.collection("users").document("\(id)").collection("wishList").getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        //print("\(document.documentID) => \(document.data())")
+                        let dict = document.data()
+                        if let link = dict["link"] as? String {
+                            if link == self.product.link {
+                                print(document.documentID)
+                                self.firebaseRemove(id: id as String, itemId: document.documentID)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func firebaseRemove(id: String, itemId: String) {
+        db.collection("users").document("\(id)").collection("wishList").document("\(itemId)").delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
+    }
+    
+    
+    
     @IBAction func dismissButtonAction(_ sender: UIBarButtonItem) {
-        self.navigationController?.popViewController(animated: true)
+        //self.navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func shareButtonAction(_ sender: UIBarButtonItem) {
@@ -250,28 +319,6 @@ class ProductDetailVC: UIViewController, WKUIDelegate {
             UIApplication.shared.open(url, options: [:])
         }
     }
-    
-//    func fetchPricesData() {
-//        if let product = product {
-//            let urlAddress = product.link
-//
-//            guard let url = URL(string: "https://search.shopping.naver.com/detail/detail.nhn?cat_id=50002334&nv_mid=21192710714") else {
-//                return
-//            }
-//            do {
-//                let html = try String(contentsOf: url, encoding: .utf8)
-//
-//                let doc : Document = try SwiftSoup.parse(html)
-//                let priceChart: Elements = try doc.select("price_chart")
-//
-//                print(try priceChart.html())
-//            } catch {
-//
-//            }
-//
-//        }
-//    }
-    
 }
 
 
@@ -311,33 +358,11 @@ extension ProductDetailVC {
         let context = appDelegate.persistentContainer.viewContext
         
         let object = self.list[self.lastBagIndex]
-        
-//        //remove firebase database
-//        if let id = self.kakaoUserID {
-//            let item = self.ref.child(String(id)).child("wishlist")
-//            item.observeSingleEvent(of: .value) { (snapshot) in
-//                if let index = snapshot.value as? NSDictionary {
-//                    for (key, value) in index {
-//                        let value = value as! NSDictionary
-//                        let link = value["link"] as! String
-//                        if link == self.product.link {
-//                            item.child(key as! String).removeValue()
-//                        }
-//                    }
-//                } else {
-//                    print("dont exist")
-//                }
-//            }
-//        }
-        
-        
-        
         context.delete(object)
         do {
             try context.save()
             list = { return self.fetch() }()
             checkBag(link: self.product.link)
-            changedList()
             return true
         } catch {
             context.rollback()
@@ -357,7 +382,9 @@ extension ProductDetailVC {
         object.setValue(product.image, forKey: "image")
         object.setValue(product.lprice, forKey: "price")
         object.setValue(product.mallName, forKey: "mallName")
-    
+        object.setValue(product.category1, forKey: "category1")
+        object.setValue(product.category2, forKey: "category2")
+        object.setValue(product.category3, forKey: "category3")
 
         //append object core base
         do {
@@ -365,51 +392,50 @@ extension ProductDetailVC {
             self.list.append(object)
             list = { return self.fetch() }()
             self.checkBag(link: self.product.link)
-            changedList()
-            //append firebase database
-//            if let id = self.kakaoUserID {
-//                let item = self.ref.child(String(id)).child("wishlist")
-//
-//                guard let key = item.childByAutoId().key else { return false }
-//                let dict: NSDictionary = ["mallName": product.mallName,
-//                                          "title": product.title,
-//                                          "image" : product.image,
-//                                          "link" : product.link,
-//                                          "price" : product.lprice]
-//                let update = [key: dict]
-//                item.updateChildValues(update)
-//            }
-            
             return true
         } catch {
             context.rollback()
             return false
         }
-        
-        
     }
     
-    func appendFireBase() {
-        if let id = self.kakaoUserID {
-            let item = self.ref.child(String(id)).child("wishList")
-            item.removeValue()
-            if self.list.count != 0 {
-                for index in 0...self.list.count - 1 {
-                    guard let key = item.childByAutoId().key else { return }
-                    let listItem = self.list[index]
-                    let dict: NSDictionary = ["mallName": listItem.value(forKey: "mallName"),
-                                              "title": listItem.value(forKey: "title"),
-                                              "image" : listItem.value(forKey: "image"),
-                                              "link" : listItem.value(forKey: "url"),
-                                              "price" : listItem.value(forKey: "price")]
-                    
-                    //append
-                    let update = [key: dict]
-                    item.updateChildValues(update)
-                }
-            }
-            uploadedList()
+}
+
+extension ProductDetailVC: WKUIDelegate {
+    
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            webView.load(navigationAction.request)
+        }
+        return nil
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "확인", style: .cancel) { _ in
+            completionHandler()
+        }
+        alertController.addAction(cancelAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            completionHandler(false)
+        }
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+            completionHandler(true)
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
         }
     }
 }
+
 
