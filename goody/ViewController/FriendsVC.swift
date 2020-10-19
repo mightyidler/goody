@@ -6,9 +6,6 @@
 //
 
 import UIKit
-import KakaoSDKAuth
-import KakaoSDKTalk
-import KakaoSDKUser
 import Firebase
 import Kingfisher
 import Firebase

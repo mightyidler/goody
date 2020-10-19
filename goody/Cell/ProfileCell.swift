@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import KakaoSDKAuth
-import KakaoSDKUser
 
 class ProfileCell: UITableViewCell {
 
@@ -37,14 +35,4 @@ class ProfileCell: UITableViewCell {
     }
     
     
-    @IBAction func logOutButtonAction(_ sender: UIButton) {
-        UserApi.shared.logout {(error) in
-            if let error = error {
-                print(error)
-            }
-            else {
-                print("logout() success.")
-            }
-        }
-    }
 }

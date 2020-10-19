@@ -12,8 +12,6 @@ import Alamofire
 import Kingfisher
 import CoreHaptics
 import Firebase
-import KakaoSDKAuth
-import KakaoSDKUser
 import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore

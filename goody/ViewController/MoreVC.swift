@@ -7,9 +7,6 @@
 
 import UIKit
 import CoreData
-import KakaoSDKAuth
-import KakaoSDKTalk
-import KakaoSDKUser
 import Kingfisher
 import Firebase
 import FirebaseAuth

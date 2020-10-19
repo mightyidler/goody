@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import KakaoSDKAuth
-import KakaoSDKUser
 import CoreHaptics
 
 protocol TabBarReselectHandling {

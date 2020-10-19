@@ -13,8 +13,6 @@ import SwiftSoup
 import Kingfisher
 import Lottie
 import Firebase
-import KakaoSDKAuth
-import KakaoSDKUser
 import FirebaseCore
 import FirebaseFirestore
 

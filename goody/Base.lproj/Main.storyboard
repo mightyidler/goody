@@ -105,19 +105,19 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[역대급 리뉴얼] 센스맘 에어매트리스 투사이드[역대급 리뉴얼] 센스맘 에어매트리스 투사이드" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BBb-RT-atn">
-                                                    <rect key="frame" x="176" y="12" width="199" height="56.5"/>
+                                                    <rect key="frame" x="176" y="12" width="199" height="59.5"/>
                                                     <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="17"/>
                                                     <color key="textColor" name="FirstLabelColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="55,900원" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B1s-WA-xrG">
-                                                    <rect key="frame" x="176" y="131" width="199" height="19"/>
+                                                    <rect key="frame" x="176" y="130" width="199" height="20"/>
                                                     <fontDescription key="fontDescription" name="NanumSquareOTFEB" family="NanumSquareOTF" pointSize="17"/>
                                                     <color key="textColor" name="FirstLabelColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="판매점" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="scG-Ta-Oxo">
-                                                    <rect key="frame" x="176" y="74.5" width="199" height="17"/>
+                                                    <rect key="frame" x="176" y="77.5" width="199" height="17"/>
                                                     <fontDescription key="fontDescription" name="NanumSquareOTFL" family="NanumSquareOTF" pointSize="15"/>
                                                     <color key="textColor" name="ThirdLabelColor"/>
                                                     <color key="highlightedColor" systemColor="secondaryLabelColor"/>
@@ -399,13 +399,13 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LabelLabelLabelLabelLabel12312가나다라마바사" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zXC-di-VfB">
-                                                <rect key="frame" x="96" y="13" width="184" height="29"/>
+                                                <rect key="frame" x="96" y="13" width="184" height="30.5"/>
                                                 <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="13"/>
                                                 <color key="textColor" name="FirstLabelColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5,000원" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KZZ-fv-Cv0">
-                                                <rect key="frame" x="96" y="48" width="184" height="19"/>
+                                                <rect key="frame" x="96" y="49.5" width="184" height="19"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="19" id="7QN-7W-BLw"/>
                                                 </constraints>
@@ -562,7 +562,7 @@
                                                 </cells>
                                             </collectionView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="정렬" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="snM-aU-C9O">
-                                                <rect key="frame" x="20" y="146" width="31" height="19"/>
+                                                <rect key="frame" x="20" y="146" width="29.5" height="19"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="19" id="eG0-kK-GIV"/>
                                                 </constraints>
@@ -583,7 +583,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="쇼핑몰" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9VV-sI-UuZ">
-                                                <rect key="frame" x="20" y="55" width="46.5" height="17"/>
+                                                <rect key="frame" x="20" y="55" width="44.5" height="17"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="17" id="WLt-YS-8H5"/>
                                                 </constraints>
@@ -1155,7 +1155,7 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="더보기" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OTi-Es-0QI">
-                                        <rect key="frame" x="20" y="15.5" width="60.5" height="29"/>
+                                        <rect key="frame" x="20" y="15.5" width="57.5" height="29"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="29" id="9hL-Oy-mxe"/>
                                         </constraints>
@@ -1339,7 +1339,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="179" height="287"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MJE-xg-5vJ">
-                                                            <rect key="frame" x="10" y="228.5" width="159" height="17"/>
+                                                            <rect key="frame" x="10" y="230" width="159" height="17"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="17" id="9oS-0W-uie"/>
                                                             </constraints>
@@ -1364,7 +1364,7 @@
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="가나다라마바사5023514134134가나다fdfsdfdfsaaASD" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="34w-15-1nK">
-                                                            <rect key="frame" x="10" y="191" width="159" height="33.5"/>
+                                                            <rect key="frame" x="10" y="191" width="159" height="35"/>
                                                             <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="15"/>
                                                             <color key="textColor" name="FirstLabelColor"/>
                                                             <nil key="highlightedColor"/>
@@ -1419,7 +1419,7 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B0c-tB-HgF">
-                                            <rect key="frame" x="76" y="20.5" width="43" height="19"/>
+                                            <rect key="frame" x="76" y="20" width="42" height="20"/>
                                             <fontDescription key="fontDescription" name="NanumSquareOTFB" family="NanumSquareOTF" pointSize="17"/>
                                             <color key="textColor" name="FirstLabelColor"/>
                                             <nil key="highlightedColor"/>
@@ -1442,7 +1442,7 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="피드" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="riK-qA-4di">
-                                        <rect key="frame" x="20" y="18" width="40.5" height="24.5"/>
+                                        <rect key="frame" x="20" y="17" width="38.5" height="26"/>
                                         <fontDescription key="fontDescription" name="NanumSquareOTFEB" family="NanumSquareOTF" pointSize="22"/>
                                         <color key="textColor" name="FirstLabelColor"/>
                                         <nil key="highlightedColor"/>
@@ -1596,13 +1596,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[역대급 리뉴얼] 센스맘 에어매트리스 투사이드[역대급 리뉴얼] 센스맘 에어매트리스 투사이드" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xhn-DK-jAl">
-                                                    <rect key="frame" x="176" y="10" width="199" height="56.5"/>
+                                                    <rect key="frame" x="176" y="10" width="199" height="59.5"/>
                                                     <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="17"/>
                                                     <color key="textColor" name="FirstLabelColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="판매점" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SOD-12-QaR">
-                                                    <rect key="frame" x="176" y="72.5" width="199" height="17"/>
+                                                    <rect key="frame" x="176" y="75.5" width="199" height="17"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="17" id="2uI-q3-hcX"/>
                                                     </constraints>
@@ -1738,13 +1738,13 @@
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="가나다라마바사5023514134134가나다fdfsdfdfsaaASD" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n3B-dV-iDb">
-                                                            <rect key="frame" x="10" y="191" width="159" height="33.5"/>
+                                                            <rect key="frame" x="10" y="191" width="159" height="35"/>
                                                             <fontDescription key="fontDescription" name="NanumSquareOTFR" family="NanumSquareOTF" pointSize="15"/>
                                                             <color key="textColor" name="FirstLabelColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dXV-xM-Bev">
-                                                            <rect key="frame" x="10" y="228.5" width="159" height="17"/>
+                                                            <rect key="frame" x="10" y="230" width="159" height="17"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="17" id="qni-EV-LGf"/>
                                                             </constraints>
